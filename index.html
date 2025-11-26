@@ -4,8 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Is Simon off?</title>
+
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <style>
 body {
@@ -103,13 +108,13 @@ body {
 </nav>
 
 <script>
+// slide animations
 function handleNavClick(e, direction, href) {
   e.preventDefault();
   const slide = document.getElementById("slide");
   slide.className = direction === "left" ? "slide-in-left" : "slide-in-right";
   setTimeout(() => window.location.href = href, 200);
 }
-
 document.getElementById("nav-simon").addEventListener("click", e =>
   handleNavClick(e, "right", "index.html")
 );
@@ -166,6 +171,7 @@ document.getElementById("checkBtn").onclick = () => {
 };
 </script>
 
+<!-- PWA INSTALL -->
 <script>
 let deferredPrompt;
 const addHomeBtn=document.getElementById('addHome');
@@ -177,6 +183,7 @@ window.addEventListener('beforeinstallprompt',e=>{
 });
 
 addHomeBtn.addEventListener('click',async()=>{
+  addHomeBtn.style.display='none';
   if(deferredPrompt){
     deferredPrompt.prompt();
     await deferredPrompt.userChoice;
@@ -186,10 +193,11 @@ addHomeBtn.addEventListener('click',async()=>{
 </script>
 
 <script>
+// service worker registration
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 }
 </script>
 
 </body>
-</html>
+      </html>
