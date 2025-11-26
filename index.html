@@ -628,6 +628,17 @@ END:VCALENDAR`;
   URL.revokeObjectURL(url);
     }
 </script>
+<script>
+/* -------------------- PWA SERVICE WORKER -------------------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("SW registered"))
+      .catch(err => console.error("SW registration failed:", err));
+  });
+}
+</script>
 
+  
 </body>
 </html>
