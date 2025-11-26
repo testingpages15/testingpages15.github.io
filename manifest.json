@@ -1,6 +1,6 @@
 {
   "name": "Is Simon Off?",
-  "short_name": "Simon Off",
+  "short_name": "Off?",
   "description": "Check if Simon is off work and get frost predictions.",
   "start_url": "./index.html",
   "scope": "./",
