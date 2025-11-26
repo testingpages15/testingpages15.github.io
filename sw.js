@@ -1,4 +1,5 @@
-// Simple network-only Service Worker (no offline cache)
+// Simple network-only Service Worker for the SPA
+// Ensures install works and keeps app lightweight
 
 self.addEventListener("install", (event) => {
   console.log("Service Worker installed");
@@ -10,7 +11,7 @@ self.addEventListener("activate", (event) => {
   return self.clients.claim();
 });
 
-// Always fetch from network
+// Always fetch fresh content from the network
 self.addEventListener("fetch", (event) => {
   event.respondWith(fetch(event.request));
 });
