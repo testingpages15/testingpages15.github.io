@@ -165,6 +165,48 @@ th,td { padding:6px 8px; border-bottom:1px solid #e2e8f0; text-align:left; }
   color:white;
   border-radius:10px;
 }
+
+  /* -------------------- DARK MODE THEME -------------------- */
+body.dark {
+  background: #0b1220;
+  color: #e6eef8;
+}
+
+body.dark .card {
+  background: #071226;
+  color: #e6eef8;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.4);
+}
+
+body.dark .bottom-nav {
+  background: #0b1220;
+  border-top-color: #1e2633;
+}
+
+body.dark .bottom-nav button {
+  color: #cdd5e6;
+}
+
+body.dark .bottom-nav button.active {
+  color: #60a5fa;
+}
+
+/* Status badges */
+body.dark .status-good { background:#0a2f1f; color:#8ff4c8; }
+body.dark .status-bad  { background:#3f0a0a; color:#ffb4b4; }
+
+/* Frost badges */
+body.dark .badge-good { background:#0a2f1f; color:#8ff4c8; }
+body.dark .badge-bad  { background:#3f0a0a; color:#ffb4b4; }
+
+/* Table */
+body.dark table {
+  color: #e6eef8;
+}
+body.dark th, 
+body.dark td {
+  border-bottom: 1px solid #1e2633;
+}
 </style>
 </head>
 
@@ -194,6 +236,11 @@ th,td { padding:6px 8px; border-bottom:1px solid #e2e8f0; text-align:left; }
 
     <h2 style="margin-top:25px;">Next Working Day</h2>
     <div id="nextWork"></div>
+
+    <hr style="margin:20px 0;">
+<button id="exportCal" style="padding:10px 16px;font-size:16px;">
+  Export Simon’s Off Days (ICS)
+</button>
 
     <hr style="margin:20px 0;">
     <h2>Select a date</h2>
@@ -528,6 +575,50 @@ document.getElementById("checkBtn").onclick = ()=>{
     explain.textContent=err.message;
   }
 })();
+
+  /* -------------------- ICS EXPORT -------------------- */
+document.getElementById("exportCal").onclick = exportCalendar;
+
+function exportCalendar() {
+  // Generate next 180 days
+  const events = [];
+  for (let i = 0; i < 180; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    if (isSimonOffOn(d)) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+
+      const dateStr = `${y}${m}${day}`;
+      events.push(
+`BEGIN:VEVENT
+DTSTART;VALUE=DATE:${dateStr}
+DTEND;VALUE=DATE:${dateStr}
+SUMMARY:Simon is OFF
+END:VEVENT`
+      );
+    }
+  }
+
+  const icsContent =
+`BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+${events.join("\n")}
+END:VCALENDAR`;
+
+  const blob = new Blob([icsContent], { type: "text/calendar" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "simon-off-days.ics";
+  a.click();
+
+  URL.revokeObjectURL(url);
+    }
 </script>
 
 </body>
