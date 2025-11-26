@@ -411,14 +411,15 @@ function resetApp(){
 }
 
 /* -------------------- SIMON ROTA -------------------- */
-const rotaBase=new Date("2025-11-29");
+const rotaBase = new Date("2025-11-29");
+
 const offOffsets = new Set([
-  0, 1, 2, 3,      // 29 Nov – 2 Dec 2025
+  0, 1, 2, 3,     // 29 Nov – 2 Dec
   9, 10,          // 8–9 Dec
   16,             // 15 Dec
   21, 22,         // 20–21 Dec
-  27, 28, 29,     // 26–28 Dec
-  34, 35, 36      // 2–4 Jan 2026 (and repeats every 42 days)
+  29,             // 28 Dec
+  34, 35, 36      // 2–4 Jan
 ]);
   
 function isSimonOffOn(date){
