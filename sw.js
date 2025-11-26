@@ -1,12 +1,46 @@
-// sw.js - minimal service worker
-self.addEventListener('install', event => {
-  console.log('Service Worker installed');
+const CACHE_NAME = "simon-frost-cache-v1";
+
+const ASSETS = [
+  "/index.html",
+  "/test.html",
+  "/manifest.json",
+  "/sw.js",
+  "/icons/192.png",
+  "/icons/512.png"
+];
+
+// Install phase: cache critical assets
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  console.log('Service Worker activated');
-  return self.clients.claim();
+// Activate: clean old caches
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      )
+    )
+  );
+  self.clients.claim();
 });
 
-// No fetch event needed since we don't cache offline
+// Fetch handler
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).catch(() =>
+          caches.match("/index.html")
+        )
+      );
+    })
+  );
+});
