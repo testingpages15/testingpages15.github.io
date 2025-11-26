@@ -1,13 +1,13 @@
 {
-  "name": "Is Simon Off? / Frost Predictor",
+  "name": "Simon & Frost",
   "short_name": "Simon & Frost",
   "description": "Check if Simon is off work and get frost predictions for Nottingham.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#0f172a",
   "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "icons/192.png",
@@ -34,4 +34,4 @@
       "purpose": "maskable"
     }
   ]
-}
+}}
