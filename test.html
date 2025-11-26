@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Car Frost Predictor — Nottingham</title>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f172a">
 
@@ -20,12 +21,12 @@
     overflow-x: hidden;
   }
 
-  /* ---------- SLIDE ANIMATIONS ---------- */
-
+  /* SLIDE */
   #slide {
     position: relative;
     animation-duration: 0.35s;
     animation-timing-function: ease-out;
+    padding: 32px 20px 100px 20px;
   }
   .slide-in-right { animation-name: slideInRight; }
   .slide-in-left  { animation-name: slideInLeft; }
@@ -39,15 +40,12 @@
     100% { opacity: 1; transform: translateX(0); }
   }
 
-  /* ---------- PAGE UI ---------- */
   .card {
     background: white;
     padding: 20px;
-    margin: 32px 20px 100px 20px;
     border-radius: 14px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);
   }
-  h1 { font-size: 22px; margin: 0 0 12px; }
 
   #badge {
     display: inline-block;
@@ -71,12 +69,6 @@
     border-bottom: 1px solid #e2e8f0;
   }
 
-  footer {
-    margin-top: 16px;
-    font-size: 13px;
-    color: #64748b;
-  }
-
   #addHome {
     display: none;
     margin: 10px 0 14px 0;
@@ -89,7 +81,6 @@
     cursor: pointer;
   }
 
-  /* ---- BOTTOM MENU ---- */
   nav {
     position: fixed;
     bottom: 0;
@@ -109,17 +100,20 @@
   }
   nav a.active { color: #1d4ed8; }
 
+  footer { margin-top: 16px; font-size: 13px; color: #64748b; }
+
   @media (prefers-color-scheme: dark) {
-    body{background:#0b1220;color:#e6eef8;}
-    .card{background:#071226;}
-    nav{background:#0b1220;border-top-color:#1e2633;}
-    nav a{color:#e6eef8;}
-    nav a.active{color:#60a5fa;}
+    body { background: #0b1220; color: #e6eef8; }
+    .card { background: #071226; }
+    nav { background: #0b1220; border-top-color: #1e2633; }
+    nav a { color: #e6eef8; }
+    nav a.active { color: #60a5fa; }
   }
 </style>
 </head>
 
 <body>
+
 <div id="slide" class="slide-in-right">
 
   <div class="card">
@@ -152,53 +146,52 @@
 
 </div>
 
-<!-- Bottom Navigation -->
 <nav>
   <a href="test.html" class="active" data-direction="right">Frost</a>
-  <a href="index.html" data-direction="left">Is simon off?</a>
+  <a href="index.html" data-direction="left">Is Simon off?</a>
 </nav>
 
-<!-- Slide script -->
 <script>
 document.querySelectorAll("nav a").forEach(link => {
   link.addEventListener("click", e => {
     e.preventDefault();
     const direction = link.dataset.direction;
     const slide = document.getElementById("slide");
-
     slide.className = direction === "left" ? "slide-in-left" : "slide-in-right";
-
-    setTimeout(() => {
-      window.location.href = link.href;
-    }, 200);
+    setTimeout(() => window.location.href = link.href, 200);
   });
 });
 </script>
 
-<!-- PWA and Frost Logic identical to before -->
+<!-- PWA -->
 <script>
-// Add to Home Screen
 let deferredPrompt;
 const addHomeBtn=document.getElementById('addHome');
 window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault(); deferredPrompt=e;
+  e.preventDefault();
+  deferredPrompt=e;
   addHomeBtn.style.display='inline-block';
 });
 addHomeBtn.addEventListener('click',async()=>{
   addHomeBtn.style.display='none';
-  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; }
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null;
+  }
 });
 </script>
 
 <script>
-// Service worker
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () =>
+    navigator.serviceWorker.register("sw.js")
+  );
 }
 </script>
 
+<!-- Frost logic (unchanged) -->
 <script>
-// Main frost logic (unchanged)
 (async function(){
   const lat=52.95,lon=-1.15,tz="Europe/London";
   const badge=document.getElementById("badge");
@@ -213,13 +206,16 @@ if("serviceWorker" in navigator){
     badge.className=good?"badge-good":"badge-bad";
   }
 
-  try{
+  try {
     explain.textContent="Preparing dates...";
     const now=new Date();
-    const fmt=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",
-      month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",
-      second:"2-digit",hour12:false});
+
+    const fmt=new Intl.DateTimeFormat("en-GB",{
+      timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
+    });
     const parts=Object.fromEntries(fmt.formatToParts(now).map(p=>[p.type,p.value]));
+
     let y=+parts.year,m=+parts.month,d=+parts.day,hour=+parts.hour;
 
     if(hour>=6){
@@ -230,6 +226,7 @@ if("serviceWorker" in navigator){
 
     const pad=n=>String(n).padStart(2,"0");
     const dateStr=`${y}-${pad(m)}-${pad(d)}`;
+
     explain.textContent="Fetching forecast…";
 
     const resp=await fetch(
@@ -237,11 +234,15 @@ if("serviceWorker" in navigator){
       `&hourly=temperature_2m,dewpoint_2m,relative_humidity_2m,cloud_cover,wind_speed_10m`+
       `&timezone=${encodeURIComponent(tz)}&start_date=${dateStr}&end_date=${dateStr}`
     );
+
     const data=await resp.json();
 
-    const times=data.hourly.time, temps=data.hourly.temperature_2m;
-    const dews=data.hourly.dewpoint_2m, hums=data.hourly.relative_humidity_2m;
-    const winds=data.hourly.wind_speed_10m, clouds=data.hourly.cloud_cover;
+    const times=data.hourly.time;
+    const temps=data.hourly.temperature_2m;
+    const dews=data.hourly.dewpoint_2m;
+    const hums=data.hourly.relative_humidity_2m;
+    const winds=data.hourly.wind_speed_10m;
+    const clouds=data.hourly.cloud_cover;
 
     const overnight=[];
     for(let i=0;i<times.length;i++){
@@ -249,8 +250,8 @@ if("serviceWorker" in navigator){
         const h=+times[i].slice(11,13);
         if(h>=0 && h<=5){
           overnight.push({
-            time:times[i], temp:temps[i], dew:dews[i],
-            rh:hums[i], wind:winds[i], cloud:clouds[i]
+            time:times[i],temp:temps[i],dew:dews[i],
+            rh:hums[i],wind:winds[i],cloud:clouds[i]
           });
         }
       }
@@ -268,34 +269,32 @@ if("serviceWorker" in navigator){
         <td>${o.dew.toFixed(1)}</td>
         <td>${o.rh}</td>
         <td>${o.wind.toFixed(1)}</td>
-        <td>${o.cloud}</td>`;
+        <td>${o.cloud}</td>
+      `;
       tbody.appendChild(tr);
       if(!coldest || o.temp<coldest.temp) coldest=o;
     });
 
-    const temp=coldest.temp, dew=coldest.dew;
-    const dewGap=temp-dew, wind=coldest.wind, cloud=coldest.cloud;
+    const frostLikely =
+      coldest.temp <= 2 &&
+      coldest.temp - coldest.dew <= 1 &&
+      coldest.wind <= 3 &&
+      coldest.cloud <= 40;
 
-    const frostRisk =
-      temp <= 2 &&
-      dewGap <= 1 &&
-      wind <= 3 &&
-      cloud <= 40;
-
-    if(frostRisk){
+    if(frostLikely){
       setBadge("Frost Likely", false);
-      advice.textContent="Put the frost cover on. Conditions ideal for frost.";
+      advice.textContent="Put the frost cover on.";
     } else {
       setBadge("No Frost Expected", true);
-      advice.textContent="Frost unlikely based on temperature, wind, and cloud.";
+      advice.textContent="Frost unlikely tonight.";
     }
 
     meta.textContent=`Coldest hour: ${coldest.time.replace("T"," ")}`;
-    explain.textContent = `Checked 00:00–05:59 for ${dateStr}`;
+    explain.textContent=`Checked 00:00–05:59`;
 
-  } catch(err){
+  } catch(e){
     setBadge("Error",false);
-    explain.textContent=err.message;
+    explain.textContent=e.message;
   }
 })();
 </script>
